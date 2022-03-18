@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<title>Jade Delight</title>
+<style>
+
+.detailsform label{
+    display: inline-block;
+    float: left;
+    clear: left;
+    width: 250px;
+    text-align: right;
+    margin-right: 5px;
+}
+.detailsform input {
+  display: inline-block;
+  
+}
+
+.detailsform {
+        width: 100%;
+}
+
+.radio {
+        text-align: center;
+}
+
+table {
+        width: 100%;
+        text-align: center;
+}
+
+.totalsec label {
+        display: inline-block;
+        float: left;
+        clear: left;
+        width: 250px;
+        text-align: right;
+        margin-right: 5px;
+}
+
+.totalsec input {
+        display: inline-block;
+}
+
+h1 {
+        text-align: center;
+}
+
+.buttonsub {
+        text-align: center;
+}
+
+</style>
+</head>
+
+<body>
+<script>
+
+function MenuItem(name, cost)
+{
+	this.name = name;
+	this.cost=cost;
+}
+
+menuItems = new Array(
+	new MenuItem("Chicken Chop Suey", 4.5),
+	new MenuItem("Sweet and Sour Pork", 6.25),
+	new MenuItem("Shrimp Lo Mein", 6.25),
+	new MenuItem("Moo Shi Chicken", 7.5),
+	new MenuItem("Fried Rice", 2.85)
+);
+
+//This function adds the select and option values on the form
+// depending on the elements in the array
+function makeSelect(name, minRange, maxRange)
+{
+	var t= "";
+	t = "<select name='" + name + "' size='1'>";
+	for (j=minRange; j<=maxRange; j++)
+	   t += "<option>" + j + "</option>";
+	t+= "</select>"; 
+	return t;
+}
+
+//    This function makes the form into a table
+function td(content, className="")
+{
+	return "<td class = '" + className + "'>" + content + "</td>";
+}
+
+$(document).ready(function() {
+        for (i = 0; i < menuItems.length; i++) {
+                let itemcost = menuItems[i].cost;
+                let row = $('.menuitemTB tr').eq(i+1);
+        
+                row.change(function() {
+                        let selected = $(this).find(':selected').text();
+                        let total = (selected * itemcost).toFixed(2);
+                        row.find('input[name="cost"]').val(total);
+        
+                        let sub = 0;
+                        $('input[name="cost"]').each(function() {
+                                sub+= parseFloat($(this).val());
+                                $('#subtotal').val(sub);
+                                tax = (sub * 0.0625).toFixed(2);
+                                $('#tax').val(tax);
+                                total = (parseFloat(tax) + sub).toFixed(2);
+                                $('#total').val(total);
+                        });        
+                });
+        }
+        
+        $('input[value="delivery"]').click(function() {
+                $('#deliveryShow').css("display", "block");
+        })
+        $('input[value="pickup"]').click(function() {
+                $('#deliveryShow').css("display", "none");
+        })
+});
+	
+</script>
+
+<h1>Jade Delight</h1>
+<form>
+
+<div class="detailsform">
+<p class="userInfo"><label>First Name:</label> <input type="text"  name='fname' /></p>
+<p class="userInfo"><label>Last Name*:</label>  <input type="text"  name='lname' /></p>
+<div id="deliveryShow">
+<p class="userInfo address"><label>Street*:</label> <input type="text" name='street' /></p>
+<p class="userInfo address"><label>City*:</label> <input type="text" name='city' /></p>
+</div>
+<p class="userInfo"><label>Phone*:</label> <input type="text"  name='phone' /></p>
+</div>
+<div class="radio">
+<p> 
+	<input type="radio"  name="p_or_d" value = "pickup" checked="checked"/>Pickup  
+	<input type="radio"  name='p_or_d' value = 'delivery'/>
+	Delivery
+</p>
+</div>
+<table border="0" cellpadding="3" class="menuitemTB">
+  <tr>
+    <th>Select Item</th>
+    <th>Item Name</th>
+    <th>Cost Each</th>
+    <th>Total Cost</th>
+  </tr>
+<script>
+
+  var s = "";
+  for (i=0; i< menuItems.length; i++)
+  {
+	  s += "<tr>";
+	  s += td(makeSelect("quan" + i, 0, 10),"selectQuantity");
+	  s += td(menuItems[i].name, "itemName");
+	  s += td("$" +menuItems[i].cost.toFixed(2), "cost");
+	  s += td("$<input type='text' name='cost'/>", "totalCost");
+	  s+= "</tr>";
+  }
+  document.writeln(s);
+</script>
+</table>
+<div class="totalsec">
+<p class="subtotal totalSection"><label>Subtotal</label>: 
+   $ <input type="text"  name='subtotal' id="subtotal" />
+</p>
+<p class="tax totalSection"><label>Mass tax 6.25%:</label>
+  $ <input type="text"  name='tax' id="tax" />
+</p>
+<p class="total totalSection"><label>Total:</label> $ <input type="text"  name='total' id="total" />
+</p>
+
+<div class="buttonsub">
+<input type = "button" value = "Submit Order"/>
+</div>
+</div>
+
+<script type="text/javascript">
+    function getCountOfDigits(str) {
+        return str.replace(/[^0-9]/g, '').length;
+    }
+    
+    function isChecked() {
+            var isChecked = $('input[value="pickup"]:checked').val()?true:false;
+            
+            alert(isChecked);
+    }
+
+$(document).ready(function() {
+        document.querySelectorAll('input[type=radio]').forEach(elem => {
+            elem.removeAttribute('checked');
+        });
+        document.querySelectorAll('input[value="delivery"]')[0].setAttribute('checked', 'true');        
+})        
+function addChecked(){
+    document.querySelectorAll('input[type=radio]:checked')[0].setAttribute('checked', 'true');
+}
+    document.querySelector("input[type='button']").addEventListener('click', ()=>{	
+            let last = document.getElementsByName("lname")[0].value;
+            let city = document.getElementsByName("city")[0].value;
+            let street = document.getElementsByName("street")[0].value;
+            let phonenum = document.getElementsByName("phone")[0].value;
+            let count = getCountOfDigits(phonenum);
+            let total = document.getElementById("total").value;
+            document.querySelectorAll('input[type=radio]').forEach(elem => {
+            elem.addEventListener('click', addChecked);
+            });
+            
+            
+            let x = document.querySelectorAll('input[type=radio]:checked')[0].value;
+            
+            var today = new Date();
+            var hour = today.getHours();
+            var minute = today.getMinutes();
+            
+            var totaltime;
+            
+            if (last == "") {
+                    alert("Please enter a last name");
+                    e.preventDefault();
+            } else if (phonenum == "") {
+                    alert("Please enter a phone number");
+                    e.preventDefault();
+            } else if (count != 10) {
+                    if (count != 7) {
+                            alert("Phone should have 7 or 10 digits");
+                            e.preventDefault();
+                    }
+            } else {
+                    
+            }
+            
+            if (x == "delivery") {
+                    // street and city are required
+                    if (street == "") {
+                            alert("Street is required when choosing delivery");
+                    } else if (city == "") {
+                            alert("City is required when choosing delivery");
+                    }
+                    
+                    var expectedDeliveryMin = minute + 30;
+                    if (minute > 29) {
+                            hour = hour + 1;
+                            expectedDeliveryMin = expectedDeliveryMin - 60;
+                    }
+                    if (expectedDeliveryMin < 10) {
+                            expectedDeliveryMin = "0" + expectedDeliveryMin;
+                    }
+                    
+                    totaltime = hour + ":" + expectedDeliveryMin;
+            } else if (x == "pickup") {
+                    var expectedPickupMin = minute + 15;
+                    if (minute > 44) {
+                            hour = hour + 1;
+                            expectedPickupMin = expectedPickupMin - 60;
+                    }
+                    if (expectedPickupMin < 10) {
+                            expectedPickupMin = "0" + expectedPickupMin;
+                    }
+                    
+                    totaltime = hour + ":" + expectedPickupMin;
+                    
+            }
+            
+            let ordereditems = "";
+            for (i=0; i < menuItems.length; i++) {
+                    let row = $('.menuitemTB tr').eq(i+1);
+                    let selectedAmt = row.find(':selected').text();
+            
+                    ordereditems += selectedAmt + " ";
+                    ordereditems += menuItems[i].name + "<br/>";
+            }
+            alert("Thank you for your order!");
+            
+            newWindow = window.open();
+            
+            newWindow.document.write(
+                    "Your order will be ready at this time --> " + totaltime + ". The total amount you spent is: $" + $('#total').val() +
+                    ". Your final order is: " + ordereditems
+            ); 
+            
+            
+            
+    });
+    
+</script>
+
+</form>
+</body>
+</html>
